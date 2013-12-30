@@ -2,7 +2,7 @@
 
 > [Traceur](https://github.com/google/traceur-compiler) is a JavaScript.next to JavaScript-of-today compiler
 
-*Issues with the output should be reported on the [Traceur issue tracker](https://github.com/google/traceur-compiler/issues).*
+*Issues with the output should be reported on the Traceur [issue tracker](https://github.com/google/traceur-compiler/issues).*
 
 
 ## Install
@@ -23,7 +23,7 @@ var traceur = require('gulp-traceur');
 gulp.task('default', function () {
 	gulp.src('src/app.js')
 		.pipe(traceur())
-		.pipe(gulp.dest('dist/app.js'));
+		.pipe(gulp.dest('dist'));
 });
 ```
 
