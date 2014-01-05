@@ -6,10 +6,17 @@ var traceur = require('traceur');
 
 module.exports = function (options) {
 	return es.map(function (file, cb) {
+		var ret;
+
 		options = options || {};
 		options.filename = path.basename(file.path);
 
-		var ret = traceur.compile(file.contents.toString(), options);
+		try {
+			ret = traceur.compile(file.contents.toString(), options);
+		} catch (err) {
+			err.message = 'gulp-traceur: ' + err.message;
+			return cb(err);
+		}
 
 		if (ret.errors.length > 0) {
 			return cb(new Error(gutil.colors.red('\n' + ret.errors.map(function (el) {
