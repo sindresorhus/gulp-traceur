@@ -12,7 +12,9 @@ it('should transpile with Traceur', function (cb) {
 		cb();
 	});
 
-	stream.write(new gutil.File({contents: 'import {Foo} from \'./foo\';'}));
+	stream.write(new gutil.File({
+		contents: new Buffer('import {Foo} from \'./foo\';')
+	}));
 });
 
 it('should pass syntax errors', function (cb) {
@@ -23,5 +25,7 @@ it('should pass syntax errors', function (cb) {
 		cb();
 	});
 
-	stream.write(new gutil.File({contents: 'cons x = 1;'}));
+	stream.write(new gutil.File({
+		contents: new Buffer('cons x = 1;')
+	}));
 });

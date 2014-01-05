@@ -1,11 +1,11 @@
 'use strict';
 var path = require('path');
-var es = require('event-stream');
 var gutil = require('gulp-util');
+var map = require('map-stream');
 var traceur = require('traceur');
 
 module.exports = function (options) {
-	return es.map(function (file, cb) {
+	return map(function (file, cb) {
 		var ret;
 
 		options = options || {};
