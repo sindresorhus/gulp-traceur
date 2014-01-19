@@ -1,11 +1,21 @@
 'use strict';
 var path = require('path');
 var gutil = require('gulp-util');
-var map = require('map-stream');
+var through = require('through2');
 var traceur = require('traceur');
 
 module.exports = function (options) {
-	return map(function (file, cb) {
+	return through.obj(function (file, enc, cb) {
+		if (file.isNull()) {
+			this.push(file);
+			return cb();
+		}
+
+		if (file.isStream()) {
+			this.emit('error', new gutil.PluginError('gulp-traceur', 'Streaming not supported'));
+			return cb();
+		}
+
 		var ret;
 
 		options = options || {};
@@ -13,18 +23,18 @@ module.exports = function (options) {
 
 		try {
 			ret = traceur.compile(file.contents.toString(), options);
+			if (ret.js) {
+				file.contents = new Buffer(ret.js);
+			}
 		} catch (err) {
-			err.message = 'gulp-traceur: ' + err.message;
-			return cb(err);
+			this.emit('error', new gutil.PluginError('gulp-traceur', err));
 		}
 
 		if (ret.errors.length > 0) {
-			return cb(new Error(gutil.colors.red('\n' + ret.errors.map(function (el) {
-				return 'gulp-traceur: ' + el;
-			}).join('\n'))));
+			this.emit('error', new gutil.PluginError('gulp-traceur', '\n' + ret.errors.join('\n')));
 		}
 
-		file.contents = new Buffer(ret.js);
-		cb(null, file);
+		this.push(file);
+		cb();
 	});
 };
