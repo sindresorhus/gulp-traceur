@@ -4,7 +4,9 @@ var gutil = require('gulp-util');
 var through = require('through2');
 var traceur = require('traceur');
 
-module.exports = function (options) {
+module.exports = gulp_traceur;
+
+function gulp_traceur(options) {
 	return through.obj(function (file, enc, cb) {
 		if (file.isNull()) {
 			this.push(file);
@@ -38,3 +40,5 @@ module.exports = function (options) {
 		cb();
 	});
 };
+
+gulp_traceur.RUNTIME_PATH = traceur.RUNTIME_PATH;
