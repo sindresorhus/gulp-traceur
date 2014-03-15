@@ -29,3 +29,8 @@ it('should pass syntax errors', function (cb) {
 		contents: new Buffer('cons x = 1;')
 	}));
 });
+
+it('should expose the Traceur runtime path', function () {
+	assert(typeof traceur.RUNTIME_PATH === 'string');
+	assert(traceur.RUNTIME_PATH.length > 0);
+});

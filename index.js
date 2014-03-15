@@ -38,3 +38,5 @@ module.exports = function (options) {
 		cb();
 	});
 };
+
+module.exports.RUNTIME_PATH = traceur.RUNTIME_PATH;

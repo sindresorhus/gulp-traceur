@@ -1,4 +1,4 @@
-# [gulp](https://github.com/wearefractal/gulp)-traceur [![Build Status](https://secure.travis-ci.org/sindresorhus/gulp-traceur.png?branch=master)](http://travis-ci.org/sindresorhus/gulp-traceur)
+# [gulp](https://github.com/wearefractal/gulp)-traceur [![Build Status](https://travis-ci.org/sindresorhus/gulp-traceur.png?branch=master)](https://travis-ci.org/sindresorhus/gulp-traceur)
 
 > [Traceur](https://github.com/google/traceur-compiler) is a JavaScript.next to JavaScript-of-today compiler
 
@@ -34,7 +34,11 @@ gulp.task('default', function () {
 
 [Options](https://github.com/google/traceur-compiler/issues/584) are passed through to Traceur, except for `options.filename` which is set for you.
 
+### traceur.RUNTIME_PATH
+
+Absolute path to the Traceur runtime.js file.
+
 
 ## License
 
-MIT © [Sindre Sorhus](http://sindresorhus.com)
+[MIT](http://opensource.org/licenses/MIT) © [Sindre Sorhus](http://sindresorhus.com)
