@@ -23,8 +23,18 @@ module.exports = function (options) {
 
 		try {
 			ret = traceur.compile(file.contents.toString(), options);
+
 			if (ret.js) {
 				file.contents = new Buffer(ret.js);
+			}
+
+			if (ret.sourceMap) {
+				this.push(new gutil.File({
+					cwd: file.cwd,
+					base: file.base,
+					path: file.path + '.map',
+					contents: new Buffer(ret.sourceMap)
+				}));
 			}
 		} catch (err) {
 			this.emit('error', new gutil.PluginError('gulp-traceur', err));

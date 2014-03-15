@@ -22,7 +22,7 @@ var traceur = require('gulp-traceur');
 
 gulp.task('default', function () {
 	gulp.src('src/app.js')
-		.pipe(traceur())
+		.pipe(traceur({sourceMap: true}))
 		.pipe(gulp.dest('dist'));
 });
 ```
