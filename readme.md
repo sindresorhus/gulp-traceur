@@ -38,6 +38,13 @@ gulp.task('default', function () {
 
 Absolute path to the Traceur runtime.js file.
 
+## Output Formats
+
+By default, Traceur treats all files as modules. This allows use of the `export`, `module` and `import` syntax.
+
+The Traceur `modules` option allows the output module to be set to `amd` or `commonjs`.
+
+In this way the transformer can be used to compile ES6 for AMD or NodeJS environments.
 
 ## License
 
