@@ -19,6 +19,7 @@ module.exports = function (options) {
 		var ret;
 
 		options = options || {};
+		options.filename = file.path;
 
 		try {
 			ret = traceur.compile(file.contents.toString(), options);
