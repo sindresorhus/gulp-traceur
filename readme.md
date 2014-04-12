@@ -19,7 +19,7 @@ var gulp = require('gulp');
 var traceur = require('gulp-traceur');
 
 gulp.task('default', function () {
-	gulp.src('src/app.js')
+	return gulp.src('src/app.js')
 		.pipe(traceur({sourceMaps: true}))
 		.pipe(gulp.dest('dist'));
 });
