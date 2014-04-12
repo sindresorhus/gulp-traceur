@@ -15,19 +15,22 @@ module.exports = function (options) {
 			this.emit('error', new gutil.PluginError('gulp-traceur', 'Streaming not supported'));
 			return cb();
 		}
-
+		
 		var ret;
-
+		
 		options = options || {};
-		options.filename = file.path;
-
+		
+		if (file.path) {
+			options.filename = file.path;
+		}
+		
 		try {
 			ret = traceur.compile(file.contents.toString(), options);
-
+			
 			if (ret.js) {
 				file.contents = new Buffer(ret.js);
 			}
-
+			
 			if (ret.sourceMap) {
 				this.push(new gutil.File({
 					cwd: file.cwd,
@@ -39,11 +42,11 @@ module.exports = function (options) {
 		} catch (err) {
 			this.emit('error', new gutil.PluginError('gulp-traceur', err));
 		}
-
+		
 		if (ret.errors.length > 0) {
 			this.emit('error', new gutil.PluginError('gulp-traceur', '\n' + ret.errors.join('\n')));
 		}
-
+		
 		this.push(file);
 		cb();
 	});
