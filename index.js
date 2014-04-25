@@ -25,7 +25,7 @@ module.exports = function (options) {
 			ret = traceur.compile(file.contents.toString(), options);
 
 			if (ret.js) {
-				file.contents = new Buffer(ret.js);
+				file.contents = new Buffer(ret.js + (ret.SourceMap ? '\n//# sourceMappingURL='+ options.filename + '.map' : ''));
 			}
 
 			if (ret.sourceMap) {
