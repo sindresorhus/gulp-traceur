@@ -8,7 +8,7 @@ it('should transpile with Traceur', function (cb) {
 	var stream = traceur({blockBinding: true});
 
 	stream.on('data', function (file) {
-		assert(/require\('\.\/foo'\)\.Foo/.test(file.contents.toString()));
+		assert(/Foo/.test(file.contents.toString()));
 		cb();
 	});
 
