@@ -51,6 +51,7 @@ it('should support Source Map', function (cb) {
 			return;
 		}
 
+		assert(/sourceMappingURL=fixture\.js\.map/.test(file.contents.toString()));
 		assert.equal(file.relative, 'fixture.js');
 	})
 
