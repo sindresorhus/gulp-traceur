@@ -88,3 +88,20 @@ it('should not have nested dirs in module name', function (cb) {
 		contents: new Buffer('import {Foo} from \'./foo\';')
 	}));
 });
+
+it('should have partial nested dirs in module name', function (cb) {
+	var stream = traceur({
+		cwd: __dirname + '/foo',
+		blockBinding: true
+	});
+	
+	stream.on('data', function (file) {
+		assert(file.contents.toString().indexOf('var __moduleName = "bar/baz";') !== -1);
+		cb();
+	});
+	
+	stream.write(new gutil.File({
+		path: __dirname + '/foo/bar/baz.js',
+		contents: new Buffer('import {Foo} from \'./foo\';')
+	}));
+});
