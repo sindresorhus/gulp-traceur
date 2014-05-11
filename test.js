@@ -8,11 +8,14 @@ it('should transpile with Traceur', function (cb) {
 	var stream = traceur({blockBinding: true});
 
 	stream.on('data', function (file) {
-		assert(/require\('\.\/foo'\)\.Foo/.test(file.contents.toString()));
+		assert(/Foo/.test(file.contents.toString()));
 		cb();
 	});
 
 	stream.write(new gutil.File({
+		cwd: __dirname,
+		base: __dirname + '/fixture',
+		path: __dirname + '/fixture/fixture.js',
 		contents: new Buffer('import {Foo} from \'./foo\';')
 	}));
 });
@@ -26,6 +29,9 @@ it('should pass syntax errors', function (cb) {
 	});
 
 	stream.write(new gutil.File({
+		cwd: __dirname,
+		base: __dirname + '/fixture',
+		path: __dirname + '/fixture/fixture.js',
 		contents: new Buffer('cons x = 1;')
 	}));
 });
@@ -45,13 +51,16 @@ it('should support Source Map', function (cb) {
 			return;
 		}
 
+		assert(/sourceMappingURL=fixture\.js\.map/.test(file.contents.toString()));
 		assert.equal(file.relative, 'fixture.js');
 	})
 
 	stream.on('end', cb);
 
 	stream.write(new gutil.File({
-		path: __dirname + '/fixture.js',
+		cwd: __dirname,
+		base: __dirname + '/fixture',
+		path: __dirname + '/fixture/fixture.js',
 		contents: new Buffer('import {Foo} from \'./foo\';')
 	}));
 

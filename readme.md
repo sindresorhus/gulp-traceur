@@ -19,8 +19,8 @@ var gulp = require('gulp');
 var traceur = require('gulp-traceur');
 
 gulp.task('default', function () {
-	gulp.src('src/app.js')
-		.pipe(traceur({sourceMaps: true}))
+	return gulp.src('src/app.js')
+		.pipe(traceur({sourceMap: true}))
 		.pipe(gulp.dest('dist'));
 });
 ```
@@ -34,7 +34,7 @@ gulp.task('default', function () {
 
 #### options
 
-##### sourceMaps
+##### sourceMap
 
 Type: `boolean`  
 Default: `false`
