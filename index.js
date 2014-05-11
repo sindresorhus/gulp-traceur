@@ -29,9 +29,9 @@ module.exports = function (options) {
 			
 			if (ret.js) {
 				if (ret.sourceMap) {
-					ret.js += '\n//# sourceMappingURL=' + options.filename + '.map';
+					ret.js += '\n//# sourceMappingURL=' + (options.cwd ? path.relative(options.cwd, file.path) : path.basename(file.path)) + '.map';
 				}
-
+				
 				file.contents = new Buffer(ret.js);
 			}
 			
