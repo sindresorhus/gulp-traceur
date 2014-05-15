@@ -3,6 +3,7 @@ var path = require('path');
 var gutil = require('gulp-util');
 var through = require('through2');
 var traceur = require('traceur');
+var applySourcemap = require('vinyl-sourcemaps-apply');
 
 module.exports = function (options) {
 	return through.obj(function (file, enc, cb) {
@@ -38,7 +39,7 @@ module.exports = function (options) {
 
 			if (ret.sourceMap) {
 				if(file.sourceMap) {
-					file.applySourceMap(ret.sourceMap);
+					applySourcemap(ret.sourceMap);
 				} else {
 					this.push(new gutil.File({
 						cwd: file.cwd,
