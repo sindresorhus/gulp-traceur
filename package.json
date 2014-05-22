@@ -39,7 +39,7 @@
   "dependencies": {
     "gulp-util": "^2.2.5",
     "through2": "^0.4.0",
-    "traceur": "^0.0.39",
+    "traceur": "^0.0.41",
     "vinyl-sourcemaps-apply": "^0.1.1"
   },
   "devDependencies": {
