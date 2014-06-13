@@ -43,9 +43,9 @@ Default: `false`
 
 Type: `string`  
 Default: `commonjs`  
-Values: `commonjs`, `amd`
+Values: see [traceur `modules` option](https://github.com/google/traceur-compiler/wiki/Options-for-Compiling#options-for-modules)
 
-By default, Traceur treats all files as modules. This allows use of the `export`, `module` and `import` syntax. In this way the transformer can be used to compile ES6 for AMD or Node.js environments.
+By default, gulp-traceur treats all files as modules. This allows use of the `export`, `module` and `import` syntax. In this way the transformer can be used to compile ES6 for AMD or Node.js environments.
 
 ### traceur.RUNTIME_PATH
 
