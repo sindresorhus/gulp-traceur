@@ -5,7 +5,7 @@ var through = require('through2');
 var traceur = require('traceur');
 
 module.exports = function (options) {
-    if(options.module === 'inline') {
+    if(typeof(options) !== 'undefined' && typeof(options.module) !== 'undefined' && options.module === 'inline') {
         traceur.compiler.compileToSingleFile(options.out, options.includes, options.sourceMap);
         return through.obj(function (file, enc, cb) {});
     }
