@@ -66,3 +66,51 @@ it('should support Source Map', function (cb) {
 
 	stream.end();
 });
+
+it('should have nested dirs in module name', function (cb) {
+	var stream = traceur({blockBinding: true});
+
+	stream.on('data', function (file) {
+		assert(file.contents.toString().indexOf('var __moduleName = "foo/bar/baz";') !== -1);
+		cb();
+	});
+
+	stream.write(new gutil.File({
+		path: __dirname + '/foo/bar/baz.js',
+		contents: new Buffer('import {Foo} from \'./foo\';')
+	}));
+});
+
+it('should not have nested dirs in module name', function (cb) {
+	var stream = traceur({
+			cwd: __dirname + '/foo/bar',
+			blockBinding: true
+		});
+
+	stream.on('data', function (file) {
+		assert(file.contents.toString().indexOf('var __moduleName = "baz";') !== -1);
+		cb();
+	});
+
+	stream.write(new gutil.File({
+		path: __dirname + '/foo/bar/baz.js',
+		contents: new Buffer('import {Foo} from \'./foo\';')
+	}));
+});
+
+it('should have partial nested dirs in module name', function (cb) {
+	var stream = traceur({
+		cwd: __dirname + '/foo',
+		blockBinding: true
+	});
+	
+	stream.on('data', function (file) {
+		assert(file.contents.toString().indexOf('var __moduleName = "bar/baz";') !== -1);
+		cb();
+	});
+	
+	stream.write(new gutil.File({
+		path: __dirname + '/foo/bar/baz.js',
+		contents: new Buffer('import {Foo} from \'./foo\';')
+	}));
+});
