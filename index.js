@@ -22,7 +22,7 @@ module.exports = function (options) {
 		var ret;
 
 		var fileOptions = objectAssign({}, options);
-		fileOptions.filename = file.relative;
+		fileOptions.filename = options.modules === 'register' ? file.path : path.basename(file.path);
 
 		if (file.sourceMap) {
 			fileOptions.sourceMaps = true;
