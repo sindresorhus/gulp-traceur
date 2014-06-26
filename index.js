@@ -1,10 +1,13 @@
 'use strict';
-var path = require('path');
 var gutil = require('gulp-util');
 var through = require('through2');
 var traceur = require('traceur');
+var applySourceMap = require('vinyl-sourcemaps-apply');
+var objectAssign = require('object-assign');
 
 module.exports = function (options) {
+	options = options || {};
+
 	return through.obj(function (file, enc, cb) {
 		if (file.isNull()) {
 			this.push(file);
@@ -18,27 +21,22 @@ module.exports = function (options) {
 
 		var ret;
 
-		options = options || {};
-		options.filename = path.basename(file.path);
+		var fileOptions = objectAssign({}, options);
+		fileOptions.filename = file.relative;
+
+		if (file.sourceMap) {
+			fileOptions.sourceMaps = true;
+		}
 
 		try {
-			ret = traceur.compile(file.contents.toString(), options);
+			ret = traceur.compile(file.contents.toString(), fileOptions);
 
 			if (ret.js) {
-				if (ret.sourceMap) {
-					ret.js += '\n//# sourceMappingURL=' + options.filename + '.map';
-				}
-
 				file.contents = new Buffer(ret.js);
 			}
 
-			if (ret.sourceMap) {
-				this.push(new gutil.File({
-					cwd: file.cwd,
-					base: file.base,
-					path: file.path + '.map',
-					contents: new Buffer(ret.sourceMap)
-				}));
+			if (ret.generatedSourceMap && file.sourceMap) {
+				applySourceMap(file, ret.generatedSourceMap);
 			}
 		} catch (err) {
 			this.emit('error', new gutil.PluginError('gulp-traceur', err, {
