@@ -41,11 +41,16 @@ module.exports = function (options) {
 				}));
 			}
 		} catch (err) {
-			this.emit('error', new gutil.PluginError('gulp-traceur', err));
+			this.emit('error', new gutil.PluginError('gulp-traceur', err, {
+				fileName: file.path
+			}));
 		}
 
 		if (ret.errors.length > 0) {
-			this.emit('error', new gutil.PluginError('gulp-traceur', '\n' + ret.errors.join('\n')));
+			this.emit('error', new gutil.PluginError('gulp-traceur', '\n' + ret.errors.join('\n'), {
+				fileName: file.path,
+				showStack: false
+			}));
 		}
 
 		this.push(file);
