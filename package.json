@@ -39,7 +39,7 @@
   "dependencies": {
     "gulp-util": "^2.2.5",
     "through2": "^0.5.1",
-    "traceur": "~0.0.49"
+    "traceur": "0.0.49"
   },
   "devDependencies": {
     "mocha": "*"
