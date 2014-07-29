@@ -32,6 +32,9 @@ gulp.task('default', function () {
 
 [Options](https://github.com/google/traceur-compiler/issues/584) are passed through to Traceur, except for `options.filename` which is set for you.
 
+If you pass "inline" to the "module" option, two other options must be set.  "includes" must then be set to the array of files which should be traced to build
+your output file, as in: ["src/main.js"] .  "out" must be set to where you want your output file written, as in: "compiled/build.js".
+
 #### options
 
 ##### sourceMap
