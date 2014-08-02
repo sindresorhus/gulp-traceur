@@ -34,15 +34,29 @@ gulp.task('default', function () {
 
 #### options
 
-##### sourceMap
+#### Source Maps
 
-Type: `boolean`  
-Default: `false`
+Use [gulp-sourcemaps](https://github.com/floridoo/gulp-sourcemaps) like this:
 
+```js
+var gulp = require('gulp');
+var sourcemaps = require('gulp-sourcemaps');
+var traceur = require('gulp-traceur');
+var concat = require('gulp-concat');
+
+gulp.task('default', function () {
+    return gulp.src('src/*.js')
+        .pipe(sourcemaps.init())
+            .pipe(traceur())
+            .pipe(concat('all.js'))
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest('dist'));
+});
+```
 ##### modules
 
-Type: `string`  
-Default: `commonjs`  
+Type: `string`
+Default: `commonjs`
 Values: see [traceur `modules` option](https://github.com/google/traceur-compiler/wiki/Options-for-Compiling#options-for-modules)
 
 By default, gulp-traceur treats all files as modules. This allows use of the `export`, `module` and `import` syntax. In this way the transformer can be used to compile ES6 for AMD or Node.js environments.
