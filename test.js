@@ -48,33 +48,6 @@ it('should expose the Traceur runtime path', function () {
 	assert(typeof traceur.RUNTIME_PATH === 'string');
 	assert(traceur.RUNTIME_PATH.length > 0);
 });
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-
-it('should support Source Map', function (cb) {
-	var stream = traceur({sourceMap: true});
-
-	var name = 'fixture.js'
-	stream.on('data', function (file) {
-		if (/\.map$/.test(file.path)) {
-			assert(/\"version":3/.test(file.contents.toString()));
-			assert.equal(file.relative, name + '.map');
-			return;
-		}
-
-		assert(new RegExp('sourceMappingURL=' + name + '\.map').test(file.contents.toString()));
-		assert.equal(file.relative, name);
-	})
-
-	stream.on('end', cb);
-
-	stream.write(getFixtureFile(name));
-
-	stream.end();
-});
->>>>>>> Use vynil's relative attribute as module filename
 
 it('should keep folder in module names with cjs modules', function (cb) {
 	// cjs is default module implementation
