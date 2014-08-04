@@ -39,12 +39,20 @@ module.exports = function (options) {
 				applySourceMap(file, ret.generatedSourceMap);
 			}
 		} catch (err) {
-			this.emit('error', new gutil.PluginError('gulp-traceur', err, {
-				fileName: file.path
-			}));
+			if (options.logErrors) {
+				gutil.log('[gulp-traceur]', err, {fileName: file.path});
+			} else {
+				this.emit('error', new gutil.PluginError('gulp-traceur', err, {
+					fileName: file.path
+				}));
+			}
 		}
 
 		if (ret.errors.length > 0) {
+			if (options.logErrors) {
+				gutil.log('[gulp-traceur]', ret.errors.join('\n'), {fileName: file.path});
+				return cb();
+			}
 			this.emit('error', new gutil.PluginError('gulp-traceur', '\n' + ret.errors.join('\n'), {
 				fileName: file.path,
 				showStack: false
