@@ -1,9 +1,8 @@
 'use strict';
 var assert = require('assert');
-var fs = require('fs');
 var gutil = require('gulp-util');
-var traceur = require('./index');
 var path = require('path');
+var traceur = require('./');
 
 var fixtures = {
 	'fixture.js': 'import {Foo} from \'./foo\';',
@@ -19,7 +18,7 @@ function getFixtureFile (name) {
 		base: __dirname + '/fixture' + name.substring(0, name.lastIndexOf('/')),
 		path: __dirname + '/fixture/' + name,
 		contents: new Buffer(fixtures[name])
-	})
+	});
 }
 
 it('should transpile with Traceur', function (cb) {

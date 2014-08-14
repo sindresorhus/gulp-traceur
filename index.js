@@ -11,12 +11,14 @@ module.exports = function (options) {
 	return through.obj(function (file, enc, cb) {
 		if (file.isNull()) {
 			this.push(file);
-			return cb();
+			cb();
+			return;
 		}
 
 		if (file.isStream()) {
 			this.emit('error', new gutil.PluginError('gulp-traceur', 'Streaming not supported'));
-			return cb();
+			cb();
+			return;
 		}
 
 		var ret;
@@ -38,20 +40,21 @@ module.exports = function (options) {
 			if (ret.generatedSourceMap && file.sourceMap) {
 				applySourceMap(file, ret.generatedSourceMap);
 			}
+
+			if (ret.errors.length > 0) {
+				this.emit('error', new gutil.PluginError('gulp-traceur', '\n' + ret.errors.join('\n'), {
+					fileName: file.path,
+					showStack: false
+				}));
+			} else {
+				this.push(file);
+			}
 		} catch (err) {
 			this.emit('error', new gutil.PluginError('gulp-traceur', err, {
 				fileName: file.path
 			}));
 		}
 
-		if (ret.errors.length > 0) {
-			this.emit('error', new gutil.PluginError('gulp-traceur', '\n' + ret.errors.join('\n'), {
-				fileName: file.path,
-				showStack: false
-			}));
-		}
-
-		this.push(file);
 		cb();
 	});
 };

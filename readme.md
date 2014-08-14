@@ -7,7 +7,7 @@
 
 ## Install
 
-```bash
+```sh
 $ npm install --save-dev gulp-traceur
 ```
 
@@ -34,25 +34,6 @@ gulp.task('default', function () {
 
 #### options
 
-#### Source Maps
-
-Use [gulp-sourcemaps](https://github.com/floridoo/gulp-sourcemaps) like this:
-
-```js
-var gulp = require('gulp');
-var sourcemaps = require('gulp-sourcemaps');
-var traceur = require('gulp-traceur');
-var concat = require('gulp-concat');
-
-gulp.task('default', function () {
-    return gulp.src('src/*.js')
-        .pipe(sourcemaps.init())
-            .pipe(traceur())
-            .pipe(concat('all.js'))
-        .pipe(sourcemaps.write())
-        .pipe(gulp.dest('dist'));
-});
-```
 ##### modules
 
 Type: `string`
@@ -66,6 +47,27 @@ By default, gulp-traceur treats all files as modules. This allows use of the `ex
 Absolute path to the Traceur runtime.js file.
 
 
+#### Source Maps
+
+Use [gulp-sourcemaps](https://github.com/floridoo/gulp-sourcemaps) like this:
+
+```js
+var gulp = require('gulp');
+var sourcemaps = require('gulp-sourcemaps');
+var traceur = require('gulp-traceur');
+var concat = require('gulp-concat');
+
+gulp.task('default', function () {
+	return gulp.src('src/*.js')
+		.pipe(sourcemaps.init())
+		.pipe(traceur())
+		.pipe(concat('all.js'))
+		.pipe(sourcemaps.write())
+		.pipe(gulp.dest('dist'));
+});
+```
+
+
 ## License
 
-[MIT](http://opensource.org/licenses/MIT) © [Sindre Sorhus](http://sindresorhus.com)
+MIT © [Sindre Sorhus](http://sindresorhus.com)
