@@ -43,6 +43,18 @@ it('should pass syntax errors', function (cb) {
 	stream.write(getFixtureFile('errored.js'));
 });
 
+it('should include path to file when logging errors', function (cb) {
+	var stream = traceur();
+	var path = new RegExp(__dirname + '/fixture/errored.js');
+
+	stream.on('error', function (err) {
+		assert(path.test(err.message));
+		cb();
+	});
+
+	stream.write(getFixtureFile('errored.js'));
+});
+
 it('should expose the Traceur runtime path', function () {
 	assert(typeof traceur.RUNTIME_PATH === 'string');
 	assert(traceur.RUNTIME_PATH.length > 0);

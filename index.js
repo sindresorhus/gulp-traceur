@@ -42,7 +42,7 @@ module.exports = function (options) {
 			}
 
 			if (ret.errors.length > 0) {
-				this.emit('error', new gutil.PluginError('gulp-traceur', '\n' + ret.errors.join('\n'), {
+				this.emit('error', new gutil.PluginError('gulp-traceur', ' ' + file.path + ':\n' + ret.errors.join('\n'), {
 					fileName: file.path,
 					showStack: false
 				}));
