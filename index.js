@@ -10,14 +10,12 @@ module.exports = function (options) {
 
 	return through.obj(function (file, enc, cb) {
 		if (file.isNull()) {
-			this.push(file);
-			cb();
+			cb(null, file);
 			return;
 		}
 
 		if (file.isStream()) {
-			this.emit('error', new gutil.PluginError('gulp-traceur', 'Streaming not supported'));
-			cb();
+			cb(new gutil.PluginError('gulp-traceur', 'Streaming not supported'));
 			return;
 		}
 
@@ -42,20 +40,18 @@ module.exports = function (options) {
 			}
 
 			if (ret.errors.length > 0) {
-				this.emit('error', new gutil.PluginError('gulp-traceur', '\n' + ret.errors.join('\n'), {
+				cb(new gutil.PluginError('gulp-traceur', '\n' + ret.errors.join('\n'), {
 					fileName: file.path,
 					showStack: false
 				}));
 			} else {
-				this.push(file);
+				cb(null, file);
 			}
 		} catch (err) {
-			this.emit('error', new gutil.PluginError('gulp-traceur', err, {
+			cb(new gutil.PluginError('gulp-traceur', err, {
 				fileName: file.path
 			}));
 		}
-
-		cb();
 	});
 };
 
