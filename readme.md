@@ -8,7 +8,7 @@
 ## Install
 
 ```sh
-$ npm install --save-dev gulp-traceur
+$ npm install --save-dev traceur gulp-traceur
 ```
 
 

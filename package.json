@@ -40,10 +40,12 @@
     "gulp-util": "^3.0.0",
     "object-assign": "^1.0.0",
     "through2": "^0.6.1",
-    "traceur": "0.0.58",
     "vinyl-sourcemaps-apply": "^0.1.1"
   },
   "devDependencies": {
     "mocha": "*"
+  },
+  "peerDependencies": {
+    "traceur": "*"
   }
 }
