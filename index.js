@@ -22,14 +22,14 @@ module.exports = function (options) {
 		var ret;
 
 		var fileOptions = objectAssign({}, options);
-		fileOptions.filename = file.relative;
 
 		if (file.sourceMap) {
 			fileOptions.sourceMaps = true;
 		}
 
 		try {
-			ret = traceur.compile(file.contents.toString(), fileOptions);
+      var sourceName = path.relative(file.base, file.path);
+			ret = traceur.compile(file.contents.toString(), fileOptions, sourceName);
 
 			if (ret.js) {
 				file.contents = new Buffer(ret.js);
