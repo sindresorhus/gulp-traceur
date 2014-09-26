@@ -1,6 +1,6 @@
 {
   "name": "gulp-traceur",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "description": "Traceur is a JavaScript.next to JavaScript-of-today compiler",
   "license": "MIT",
   "repository": "sindresorhus/gulp-traceur",
@@ -40,7 +40,7 @@
     "gulp-util": "^3.0.0",
     "object-assign": "^1.0.0",
     "through2": "^0.6.1",
-    "traceur": "0.0.58",
+    "traceur": "^0.0.66",
     "vinyl-sourcemaps-apply": "^0.1.1"
   },
   "devDependencies": {
