@@ -32,6 +32,22 @@ it('should transpile with Traceur', function (cb) {
 	stream.write(getFixtureFile('fixture.js'));
 });
 
+it('should generate sourcemaps', function (cb) {
+	var stream = traceur({blockBinding: true, sourceMaps: true});
+
+	stream.on('data', function (file) {
+		assert(file.sourceMap.file === file.relative, 'source map not generated');
+	});
+
+	stream.on('end', cb);
+
+	['calc.js', 'util/constants.js', 'calc/add.js'].forEach(function (name) {
+		stream.write(getFixtureFile(name));
+	});
+
+	stream.end();
+});
+
 it('should pass syntax errors', function (cb) {
 	var stream = traceur();
 
