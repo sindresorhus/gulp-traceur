@@ -40,12 +40,9 @@ module.exports = function (options) {
 			}
 
 			if (ret.errors.length > 0) {
-				cb(new gutil.PluginError('gulp-traceur', '\n' + ret.errors.join('\n'), {
-					fileName: file.path,
-					showStack: false
-				}));
+				this.emit('error', new gutil.PluginError('gulp-traceur', ret.errors.join('\n'), {fileName: file.path}));
 			} else {
-				cb(null, file);
+				this.push(file);
 			}
 		} catch (err) {
 			cb(new gutil.PluginError('gulp-traceur', err, {
