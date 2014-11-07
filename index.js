@@ -2,6 +2,7 @@
 var gutil = require('gulp-util');
 var through = require('through2');
 var traceur = require('traceur');
+var traceurNodeApi = require('traceur/src/node/api');
 var applySourceMap = require('vinyl-sourcemaps-apply');
 var objectAssign = require('object-assign');
 
@@ -19,32 +20,23 @@ module.exports = function (options) {
 			return;
 		}
 
-		var contents, compiler, generator, parser, ret, source, sourceMapConfig, tree;
-
 		var fileOptions = objectAssign({ modules: 'commonjs' }, options);
-		fileOptions.filename = file.relative;
 
-		var sourceName = undefined;
-		if (options.moduleName === true) {
-			sourceName = fileOptions.filename;
+		if (file.sourceMap) {
+			fileOptions.sourceMaps = true;
 		}
 
 		try {
-			compiler = new traceur.Compiler(fileOptions);
-			contents = file.contents.toString();
-			ret = compiler.compile(contents, sourceName);
-			file.contents = new Buffer(ret);
+			var compiler = new traceurNodeApi.NodeCompiler(fileOptions);
+			var ret = compiler.compile(file.contents.toString(), file.relative, file.relative, file.base);
+			var generatedSourceMap = compiler.getSourceMap();
 
-			if (options.sourceMaps === true) {
-				source = new traceur.syntax.SourceFile(fileOptions.filename, contents);
-				parser = new traceur.syntax.Parser(source);
-				tree = parser.parseModule();
-				tree.moduleName = fileOptions.filename;
-				sourceMapConfig = {file: fileOptions.filename};
-				generator = new traceur.outputgeneration.SourceMapGenerator(sourceMapConfig);
-				sourceMapConfig = {sourceMapGenerator: generator};
-				traceur.outputgeneration.TreeWriter.write(tree, sourceMapConfig, fileOptions.filename);
-				applySourceMap(file, sourceMapConfig.generatedSourceMap);
+			if (ret) {
+				file.contents = new Buffer(ret);
+			}
+
+			if (generatedSourceMap && file.sourceMap) {
+				applySourceMap(file, generatedSourceMap);
 			}
 
 			cb(null, file);

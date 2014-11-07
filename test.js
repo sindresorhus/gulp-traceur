@@ -2,6 +2,7 @@
 var assert = require('assert');
 var gutil = require('gulp-util');
 var path = require('path');
+var sourceMaps = require('gulp-sourcemaps');
 var traceur = require('./');
 
 var fixtures = {
@@ -32,20 +33,30 @@ it('should transpile with Traceur', function (cb) {
 	stream.write(getFixtureFile('fixture.js'));
 });
 
-it('should generate sourcemaps', function (cb) {
-	var stream = traceur({blockBinding: true, sourceMaps: true});
+it('should generate source maps', function (cb) {
+	var init = sourceMaps.init();
+	var write = sourceMaps.write();
+	init
+		.pipe(traceur())
+		.pipe(write);
 
-	stream.on('data', function (file) {
-		assert(file.sourceMap.file === file.relative, 'source map not generated');
+	write.on('data', function (file) {
+		assert.equal(file.sourceMap.sources[0], 'fixture.js');
+		var contents = file.contents.toString();
+		assert(/function/.test(contents));
+		assert(/sourceMappingURL=data:application\/json;base64/.test(contents));
+		cb();
 	});
 
-	stream.on('end', cb);
+	init.write(new gutil.File({
+		cwd: __dirname,
+		base: __dirname + '/fixture',
+		path: __dirname + '/fixture/fixture.js',
+		contents: new Buffer('[].map(v => v + 1)'),
+		sourceMap: ''
+	}));
 
-	['calc.js', 'util/constants.js', 'calc/add.js'].forEach(function (name) {
-		stream.write(getFixtureFile(name));
-	});
-
-	stream.end();
+	init.end();
 });
 
 it('should pass syntax errors', function (cb) {
