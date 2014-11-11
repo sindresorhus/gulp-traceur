@@ -1,4 +1,4 @@
-# [gulp](http://gulpjs.com)-traceur [![Build Status](https://travis-ci.org/sindresorhus/gulp-traceur.svg?branch=master)](https://travis-ci.org/sindresorhus/gulp-traceur)
+# gulp-traceur [![Build Status](https://travis-ci.org/sindresorhus/gulp-traceur.svg?branch=master)](https://travis-ci.org/sindresorhus/gulp-traceur)
 
 > [Traceur](https://github.com/google/traceur-compiler) is a JavaScript.next to JavaScript-of-today compiler
 
@@ -36,8 +36,8 @@ gulp.task('default', function () {
 
 ##### modules
 
-Type: `string`
-Default: `commonjs`
+Type: `string`  
+Default: `commonjs`  
 Values: see [traceur `modules` option](https://github.com/google/traceur-compiler/wiki/Options-for-Compiling#options-for-modules)
 
 By default, gulp-traceur treats all files as modules. This allows use of the `export`, `module` and `import` syntax. In this way the transformer can be used to compile ES6 for AMD or Node.js environments.
