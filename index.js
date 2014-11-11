@@ -2,6 +2,7 @@
 var gutil = require('gulp-util');
 var through = require('through2');
 var traceur = require('traceur');
+var traceurNodeApi = require('traceur/src/node/api');
 var applySourceMap = require('vinyl-sourcemaps-apply');
 var objectAssign = require('object-assign');
 
@@ -19,37 +20,30 @@ module.exports = function (options) {
 			return;
 		}
 
-		var ret;
-
-		var fileOptions = objectAssign({}, options);
-		fileOptions.filename = file.relative;
+		var fileOptions = objectAssign({ modules: 'commonjs' }, options);
 
 		if (file.sourceMap) {
 			fileOptions.sourceMaps = true;
 		}
 
 		try {
-			ret = traceur.compile(file.contents.toString(), fileOptions);
+			var compiler = new traceurNodeApi.NodeCompiler(fileOptions);
+			var ret = compiler.compile(file.contents.toString(), file.relative, file.relative, file.base);
+			var generatedSourceMap = compiler.getSourceMap();
 
-			if (ret.js) {
-				file.contents = new Buffer(ret.js);
+			if (ret) {
+				file.contents = new Buffer(ret);
 			}
 
-			if (ret.generatedSourceMap && file.sourceMap) {
-				applySourceMap(file, ret.generatedSourceMap);
+			if (generatedSourceMap && file.sourceMap) {
+				applySourceMap(file, generatedSourceMap);
 			}
 
-			if (ret.errors.length > 0) {
-				cb(new gutil.PluginError('gulp-traceur', '\n' + ret.errors.join('\n'), {
-					fileName: file.path,
-					showStack: false
-				}));
-			} else {
-				cb(null, file);
-			}
-		} catch (err) {
-			cb(new gutil.PluginError('gulp-traceur', err, {
-				fileName: file.path
+			cb(null, file);
+		} catch (e) {
+			cb(new gutil.PluginError('gulp-traceur', String(e), {
+				fileName: file.path,
+				showStack: false
 			}));
 		}
 	});
