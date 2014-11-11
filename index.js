@@ -1,13 +1,12 @@
 'use strict';
 var gutil = require('gulp-util');
 var through = require('through2');
-var traceur = require('traceur');
-var traceurNodeApi = require('traceur/src/node/api');
 var applySourceMap = require('vinyl-sourcemaps-apply');
 var objectAssign = require('object-assign');
+var traceur = require('traceur');
 
-module.exports = function (options) {
-	options = options || {};
+module.exports = function (opts) {
+	opts = opts || {};
 
 	return through.obj(function (file, enc, cb) {
 		if (file.isNull()) {
@@ -20,14 +19,14 @@ module.exports = function (options) {
 			return;
 		}
 
-		var fileOptions = objectAssign({ modules: 'commonjs' }, options);
+		var fileOptions = objectAssign({modules: 'commonjs'}, opts);
 
 		if (file.sourceMap) {
 			fileOptions.sourceMaps = true;
 		}
 
 		try {
-			var compiler = new traceurNodeApi.NodeCompiler(fileOptions);
+			var compiler = new traceur.NodeCompiler(fileOptions);
 			var ret = compiler.compile(file.contents.toString(), file.relative, file.relative, file.base);
 			var generatedSourceMap = compiler.getSourceMap();
 
@@ -39,13 +38,15 @@ module.exports = function (options) {
 				applySourceMap(file, generatedSourceMap);
 			}
 
-			cb(null, file);
-		} catch (e) {
-			cb(new gutil.PluginError('gulp-traceur', String(e), {
+			this.push(file);
+		} catch (errs) {
+			this.emit('error', new gutil.PluginError('gulp-traceur', errs.join('\n'), {
 				fileName: file.path,
 				showStack: false
 			}));
 		}
+
+		cb();
 	});
 };
 
