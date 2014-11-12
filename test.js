@@ -45,6 +45,7 @@ it('should generate source maps', function (cb) {
 		var contents = file.contents.toString();
 		assert(/function/.test(contents));
 		assert(/sourceMappingURL=data:application\/json;base64/.test(contents));
+		assert.strictEqual((contents.match(/sourceMappingURL/g) || []).length, 1, 'should be one sourceMappingURL in the content');
 		cb();
 	});
 

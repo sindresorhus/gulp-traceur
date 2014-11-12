@@ -6,7 +6,8 @@ var objectAssign = require('object-assign');
 var traceur = require('traceur');
 
 module.exports = function (opts) {
-	opts = opts || {};
+
+	var compiler = new traceur.NodeCompiler(objectAssign({modules: 'commonjs'}, opts || {}));
 
 	return through.obj(function (file, enc, cb) {
 		if (file.isNull()) {
@@ -19,14 +20,7 @@ module.exports = function (opts) {
 			return;
 		}
 
-		var fileOptions = objectAssign({modules: 'commonjs'}, opts);
-
-		if (file.sourceMap) {
-			fileOptions.sourceMaps = true;
-		}
-
 		try {
-			var compiler = new traceur.NodeCompiler(fileOptions);
 			var ret = compiler.compile(file.contents.toString(), file.relative, file.relative, file.base);
 			var generatedSourceMap = compiler.getSourceMap();
 
