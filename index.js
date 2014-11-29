@@ -43,4 +43,89 @@ module.exports = function (opts) {
 	});
 };
 
+module.exports.single = function(fileName, options) {
+    options = options || {};
+
+    var basePath;
+    var files = {};
+
+    function onFile(file, enc, next) {
+        if (file.isNull())
+            return next();
+
+        if (!file.isBuffer())
+            throw new Error('streaming not supported');
+
+        basePath = basePath || file.base;
+        files[file.path] = file;
+
+        next();
+    }
+
+    function onFlush() {
+        var elements = [];
+
+        var loaderCompiler = new traceur.runtime.InlineLoaderCompiler(elements);
+
+        var save = function() {
+            var tree = loaderCompiler.toTree(basePath, elements);
+            var compiler = new traceur.NodeCompiler({});
+            var contents = compiler.write(tree, 'app.js');
+            var sourceMap = compiler.getSourceMap();
+            var file = new gutil.File({
+                base: basePath,
+                path: basePath + fileName,
+                contents: new Buffer(contents),
+                sourceMap: sourceMap
+            });
+
+            this.push(file);
+            this.emit('end');
+        }.bind(this);
+
+        var fileLoader = {
+            load: function(url, callback, errback) {
+                if (!(url in files))
+                    errback(new Error('file not found: '+url));
+
+                callback(files[url].contents.toString('utf8'));
+            }
+        };
+
+        var loader = new traceur.runtime.TraceurLoader(fileLoader, basePath, loaderCompiler);
+
+        var loadOptions = {
+            referrerName: undefined,
+            metadata: { traceurOptions: options }
+        };
+
+        function appendEvaluateModule(name, referrerName) {
+            var normalizedName = traceur.ModuleStore.normalize(name, referrerName);
+            var moduleModule = traceur.codegeneration.module;
+            var tree = moduleModule.createModuleEvaluationStatement(normalizedName);
+            elements.push(tree);
+        }
+
+        function load(paths) {
+            var path = paths.pop();
+            if (!path)
+                return save();
+
+            var file = files[path];
+            var name = file.path.replace(file.base, '').replace(/\.js$/, '');
+
+            loader.import(name, loadOptions).then(function() {
+                if (!options.modules || options.modules === 'register')
+                    appendEvaluateModule(name, '');
+
+                load(paths);
+            });
+        }
+
+        load(Object.keys(files));
+    }
+    
+    return through.obj(onFile, onFlush);
+};
+
 module.exports.RUNTIME_PATH = traceur.RUNTIME_PATH;
