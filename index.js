@@ -5,6 +5,51 @@ var applySourceMap = require('vinyl-sourcemaps-apply');
 var objectAssign = require('object-assign');
 var traceur = require('traceur');
 
+function apiCall(basePath, paths, fileLoader, options, callback, errback) {
+    var elements = [];
+
+    var loaderCompiler = new traceur.runtime.InlineLoaderCompiler(elements);
+
+    function save() {
+        var tree = loaderCompiler.toTree(basePath, elements);
+        var compiler = new traceur.NodeCompiler({});
+        var contents = compiler.write(tree, 'app.js');
+        var sourceMap = compiler.getSourceMap();
+        callback(contents, sourceMap);
+    }
+
+    var loader = new traceur.runtime.TraceurLoader(fileLoader, basePath, loaderCompiler);
+
+    var loadOptions = {
+        referrerName: undefined,
+        metadata: { traceurOptions: options }
+    };
+
+    function appendEvaluateModule(name, referrerName) {
+        var normalizedName = traceur.ModuleStore.normalize(name, referrerName);
+        var moduleModule = traceur.codegeneration.module;
+        var tree = moduleModule.createModuleEvaluationStatement(normalizedName);
+        elements.push(tree);
+    }
+
+    function load(paths) {
+        var path = paths.pop();
+        if (!path)
+            return save();
+
+        var name = path.replace(basePath, '').replace(/\.js$/, '');
+
+        loader.import(name, loadOptions).then(function() {
+            if (!options.modules || options.modules === 'register')
+                appendEvaluateModule(name, '');
+
+            load(paths);
+        });
+    }
+
+    load(paths);
+}
+
 module.exports = function (opts) {
 	var compiler = new traceur.NodeCompiler(objectAssign({modules: 'commonjs'}, opts));
 
@@ -63,15 +108,16 @@ module.exports.single = function(fileName, options) {
     }
 
     function onFlush() {
-        var elements = [];
+        var fileLoader = {
+            load: function(url, callback, errback) {
+                if (!(url in files))
+                    errback(new Error('file not found: '+url));
 
-        var loaderCompiler = new traceur.runtime.InlineLoaderCompiler(elements);
+                callback(files[url].contents.toString('utf8'));
+            }
+        };
 
-        var save = function() {
-            var tree = loaderCompiler.toTree(basePath, elements);
-            var compiler = new traceur.NodeCompiler({});
-            var contents = compiler.write(tree, 'app.js');
-            var sourceMap = compiler.getSourceMap();
+        var save = function(contents, sourceMap) {
             var file = new gutil.File({
                 base: basePath,
                 path: basePath + fileName,
@@ -83,46 +129,9 @@ module.exports.single = function(fileName, options) {
             this.emit('end');
         }.bind(this);
 
-        var fileLoader = {
-            load: function(url, callback, errback) {
-                if (!(url in files))
-                    errback(new Error('file not found: '+url));
+        var paths = Object.keys(files);
 
-                callback(files[url].contents.toString('utf8'));
-            }
-        };
-
-        var loader = new traceur.runtime.TraceurLoader(fileLoader, basePath, loaderCompiler);
-
-        var loadOptions = {
-            referrerName: undefined,
-            metadata: { traceurOptions: options }
-        };
-
-        function appendEvaluateModule(name, referrerName) {
-            var normalizedName = traceur.ModuleStore.normalize(name, referrerName);
-            var moduleModule = traceur.codegeneration.module;
-            var tree = moduleModule.createModuleEvaluationStatement(normalizedName);
-            elements.push(tree);
-        }
-
-        function load(paths) {
-            var path = paths.pop();
-            if (!path)
-                return save();
-
-            var file = files[path];
-            var name = file.path.replace(file.base, '').replace(/\.js$/, '');
-
-            loader.import(name, loadOptions).then(function() {
-                if (!options.modules || options.modules === 'register')
-                    appendEvaluateModule(name, '');
-
-                load(paths);
-            });
-        }
-
-        load(Object.keys(files));
+        apiCall(basePath, paths, fileLoader, options, save);
     }
     
     return through.obj(onFile, onFlush);
