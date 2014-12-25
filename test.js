@@ -120,7 +120,7 @@ it('should keep folder in module names with register modules', function (cb) {
 			case path.join('util', 'constants.js'):
 			case path.join('calc', 'add.js'):
 				var fileName = file.relative.replace(new RegExp('\\' + path.sep, 'g'), '/').replace('.js', '');
-				assert(new RegExp('System\\.register\\("' + fileName + '"').test(content), fileName + ' does not contains its filename');
+				assert(new RegExp('System\\.registerModule\\("' + fileName + '.js"').test(content), fileName + ' does not contains its filename');
 				break;
 			default:
 				cb('unexpected compiled file: ' + file.relative);
