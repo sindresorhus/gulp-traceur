@@ -40,7 +40,7 @@
     "gulp-util": "^3.0.0",
     "object-assign": "^2.0.0",
     "through2": "^0.6.1",
-    "traceur": "0.0.79",
+    "traceur": "0.0.82",
     "vinyl-sourcemaps-apply": "^0.1.1"
   },
   "devDependencies": {
