@@ -7,7 +7,9 @@ var traceur = require('traceur');
 
 module.exports = function (opts) {
 	var compiler = new traceur.NodeCompiler(objectAssign({modules: 'commonjs'}, opts));
-
+	if (opts.experimental) { compiler.options_.experimental = opts.experimental; }
+	if (opts.atscript) { compiler.options_.experimental = opts.atscript; }
+	
 	return through.obj(function (file, enc, cb) {
 		if (file.isNull()) {
 			cb(null, file);
