@@ -13,11 +13,9 @@ module.exports = function (opts) {
 
 	if (typeof mergedOptions.moduleName === 'function') {
 		moduleNameGenerator = mergedOptions.moduleName;
-		delete mergedOptions.moduleName;
-
-	} else {
-		compiler = new traceur.NodeCompiler(mergedOptions);
 	}
+
+	compiler = new traceur.NodeCompiler(mergedOptions);
 
 	return through.obj(function (file, enc, cb) {
 		if (file.isNull()) {
@@ -37,7 +35,6 @@ module.exports = function (opts) {
 
 			if (moduleNameGenerator) {
 				sourceName = moduleNameGenerator(file);
-				compiler = new traceur.NodeCompiler(objectAssign({ 'moduleName': sourceName }, mergedOptions));
 			}
 
 			ret = compiler.compile(file.contents.toString(), sourceName, file.relative, file.base);
