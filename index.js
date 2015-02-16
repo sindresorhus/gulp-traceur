@@ -6,7 +6,16 @@ var objectAssign = require('object-assign');
 var traceur = require('traceur');
 
 module.exports = function (opts) {
-	var compiler = new traceur.NodeCompiler(objectAssign({modules: 'commonjs'}, opts));
+	var
+		mergedOptions = objectAssign({ 'modules': 'commonjs' }, opts),
+		compiler,
+		moduleNameGenerator;
+
+	if (typeof mergedOptions.moduleName === 'function') {
+		moduleNameGenerator = mergedOptions.moduleName;
+	}
+
+	compiler = new traceur.NodeCompiler(mergedOptions);
 
 	return through.obj(function (file, enc, cb) {
 		if (file.isNull()) {
@@ -20,8 +29,15 @@ module.exports = function (opts) {
 		}
 
 		try {
-			var ret = compiler.compile(file.contents.toString(), file.relative, file.relative, file.base);
+			var ret;
 			var sourceMap = file.sourceMap && compiler.getSourceMap();
+			var sourceName = file.relative;
+
+			if (moduleNameGenerator) {
+				sourceName = moduleNameGenerator(file);
+			}
+
+			ret = compiler.compile(file.contents.toString(), sourceName, file.relative, file.base);
 
 			if (ret) {
 				file.contents = new Buffer(ret);
@@ -32,8 +48,9 @@ module.exports = function (opts) {
 			}
 
 			this.push(file);
+
 		} catch (errs) {
-			this.emit('error', new gutil.PluginError('gulp-traceur', errs.join('\n'), {
+			this.emit('error', new gutil.PluginError('gulp-traceur', errs ? errs.join('\n') : 'An error occured', {
 				fileName: file.path,
 				showStack: false
 			}));

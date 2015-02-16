@@ -13,12 +13,27 @@ var fixtures = {
 	'calc/add.js': 'export function add (...args) {\n\treturn args.reduce((sum, val) => sum + val, 0);\n};'
 };
 
+var fixturesModules = {
+	'calc.js': 'import {a, b} from "app/fixture/util/constants";\nimport {add} from "app/fixture/calc/add";\nconsole.log(add(a, b));',
+	'util/constants.js': 'export var a = 5;\nexport var b = 3;',
+	'calc/add.js': 'export function add (...args) {\n\treturn args.reduce((sum, val) => sum + val, 0);\n};'
+};
+
 function getFixtureFile (name) {
 	return new gutil.File({
 		cwd: __dirname,
 		base: __dirname + '/fixture' + name.substring(0, name.lastIndexOf('/')),
 		path: __dirname + '/fixture/' + name,
 		contents: new Buffer(fixtures[name])
+	});
+}
+
+function getFixtureFileForModule (name) {
+	return new gutil.File({
+		cwd: __dirname,
+		base: __dirname + '/fixture' + name.substring(0, name.lastIndexOf('/')),
+		path: __dirname + '/fixture/' + name,
+		contents: new Buffer(fixturesModules[name])
 	});
 }
 
@@ -131,6 +146,39 @@ it('should keep folder in module names with register modules', function (cb) {
 
 	['calc.js', 'util/constants.js', 'calc/add.js'].forEach(function (name) {
 		stream.write(getFixtureFile(name));
+	});
+
+	stream.end();
+});
+
+it('should use the module name function to register modules', function (cb) {
+	var stream = traceur({ 'experimental': true, 'modules': 'instantiate', 'moduleName': function (file) {
+		var relativePath = path.normalize(path.relative(__dirname, file.path));
+		return 'app' + path.sep + relativePath.substr(0, relativePath.length - 3);
+	}});
+
+	stream.on('data', function (file) {
+		var content = file.contents.toString();
+
+		switch (path.basename(file.path)) {
+			case 'calc.js':
+				assert(/System\.register\("app\/fixture\/calc"/.test(content), 'calc.js have to be registered !');
+				break;
+			case 'constants.js':
+				assert(/System\.register\("app\/fixture\/util\/constants"/.test(content), 'constants.js have to be registered !');
+				break;
+			case 'add.js':
+				assert(/System\.register\("app\/fixture\/calc\/add"/.test(content), 'add.js have to be registered !');
+				break;
+			default:
+				cb('unexpected compiled file: ' + file.relative);
+		}
+	});
+
+	stream.on('end', cb);
+
+	['calc.js', 'util/constants.js', 'calc/add.js'].forEach(function (name) {
+		stream.write(getFixtureFileForModule(name));
 	});
 
 	stream.end();
