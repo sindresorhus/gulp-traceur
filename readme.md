@@ -1,13 +1,13 @@
 # gulp-traceur [![Build Status](https://travis-ci.org/sindresorhus/gulp-traceur.svg?branch=master)](https://travis-ci.org/sindresorhus/gulp-traceur)
 
-> [Traceur](https://github.com/google/traceur-compiler) is a JavaScript.next to JavaScript-of-today compiler
+> [`Traceur`](https://github.com/google/traceur-compiler) is a JavaScript.next to JavaScript-of-today compiler
 
-*Issues with the output should be reported on the Traceur [issue tracker](https://github.com/google/traceur-compiler/issues).*
+*Issues with the output should be reported on the `Traceur` [issue tracker](https://github.com/google/traceur-compiler/issues).*
 
 
 ## Install
 
-```sh
+```
 $ npm install --save-dev gulp-traceur
 ```
 
@@ -28,9 +28,9 @@ gulp.task('default', function () {
 
 ## API
 
-### traceur(options)
+### traceur([options])
 
-[Options](https://github.com/google/traceur-compiler/issues/584) are passed through to Traceur, except for `options.filename` which is set for you.
+See the `Traceur` [options](https://github.com/google/traceur-compiler/issues/584).
 
 #### options
 
