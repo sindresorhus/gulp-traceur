@@ -15,10 +15,10 @@ $ npm install --save-dev gulp-traceur
 ## Usage
 
 ```js
-var gulp = require('gulp');
-var traceur = require('gulp-traceur');
+const gulp = require('gulp');
+const traceur = require('gulp-traceur');
 
-gulp.task('default', function () {
+gulp.task('default', () => {
 	return gulp.src('src/app.js')
 		.pipe(traceur())
 		.pipe(gulp.dest('dist'));
@@ -52,12 +52,12 @@ Absolute path to the Traceur runtime.js file.
 Use [gulp-sourcemaps](https://github.com/floridoo/gulp-sourcemaps) like this:
 
 ```js
-var gulp = require('gulp');
-var sourcemaps = require('gulp-sourcemaps');
-var traceur = require('gulp-traceur');
-var concat = require('gulp-concat');
+const gulp = require('gulp');
+const sourcemaps = require('gulp-sourcemaps');
+const traceur = require('gulp-traceur');
+const concat = require('gulp-concat');
 
-gulp.task('default', function () {
+gulp.task('default', () => {
 	return gulp.src('src/*.js')
 		.pipe(sourcemaps.init())
 		.pipe(traceur())
