@@ -36,8 +36,9 @@ module.exports = function (opts) {
 			}
 
 			this.push(file);
-		} catch (errs) {
-			this.emit('error', new gutil.PluginError('gulp-traceur', errs.join('\n'), {
+		} catch (e) {
+			var errors = Array.isArray(e) ? e.join('\n') : e.errors.join('\n');
+			this.emit('error', new gutil.PluginError('gulp-traceur', errors, {
 				fileName: file.path,
 				showStack: false
 			}));
