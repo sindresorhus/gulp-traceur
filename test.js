@@ -1,12 +1,12 @@
 /* eslint-env mocha */
 'use strict';
-var assert = require('assert');
-var path = require('path');
-var gutil = require('gulp-util');
-var sourceMaps = require('gulp-sourcemaps');
-var traceur = require('./');
+const assert = require('assert');
+const path = require('path');
+const sourceMaps = require('gulp-sourcemaps');
+const Vinyl = require('vinyl');
+const traceur = require('.');
 
-var fixtures = {
+const fixtures = {
 	'fixture.js': 'import {Foo} from \'./foo\';',
 	'errored.js': 'cons x = 1;',
 	'calc.js': 'import {a, b} from "util/constants";\nimport {add} from "calc/add";\nconsole.log(add(a, b));',
@@ -15,18 +15,18 @@ var fixtures = {
 };
 
 function getFixtureFile(name) {
-	return new gutil.File({
+	return new Vinyl({
 		cwd: __dirname,
 		base: path.join(__dirname, 'fixture' + name.substring(0, name.lastIndexOf('/'))),
 		path: path.join(__dirname, 'fixture', name),
-		contents: new Buffer(fixtures[name])
+		contents: Buffer.from(fixtures[name])
 	});
 }
 
-it('should transpile with Traceur', function (cb) {
-	var stream = traceur({blockBinding: true});
+it('should transpile with Traceur', cb => {
+	const stream = traceur({blockBinding: true});
 
-	stream.on('data', function (file) {
+	stream.on('data', file => {
 		assert(/Foo/.test(file.contents.toString()));
 		cb();
 	});
@@ -34,37 +34,37 @@ it('should transpile with Traceur', function (cb) {
 	stream.write(getFixtureFile('fixture.js'));
 });
 
-it('should generate source maps', function (cb) {
-	var init = sourceMaps.init();
-	var write = sourceMaps.write();
+it('should generate source maps', cb => {
+	const init = sourceMaps.init();
+	const write = sourceMaps.write();
 	init
 		.pipe(traceur())
 		.pipe(write);
 
-	write.on('data', function (file) {
+	write.on('data', file => {
 		assert.equal(file.sourceMap.sources[0], 'fixture.js');
-		var contents = file.contents.toString();
+		const contents = file.contents.toString();
 		assert(/function/.test(contents));
-		assert(/sourceMappingURL=data:application\/json;base64/.test(contents));
+		assert(/sourceMappingURL=data:application\/json;charset=utf8;base64/.test(contents));
 		assert.strictEqual((contents.match(/sourceMappingURL/g) || []).length, 1, 'should be one sourceMappingURL in the content');
 		cb();
 	});
 
-	init.write(new gutil.File({
+	init.write(new Vinyl({
 		cwd: __dirname,
 		base: path.join(__dirname, 'fixture'),
 		path: path.join(__dirname, 'fixture/fixture.js'),
-		contents: new Buffer('[].map(v => v + 1)'),
+		contents: Buffer.from('[].map(v => v + 1)'),
 		sourceMap: ''
 	}));
 
 	init.end();
 });
 
-it('should pass syntax errors', function (cb) {
-	var stream = traceur();
+it('should pass syntax errors', cb => {
+	const stream = traceur();
 
-	stream.on('error', function (err) {
+	stream.on('error', err => {
 		assert(/Semi-colon expected/.test(err.message));
 		cb();
 	});
@@ -72,18 +72,18 @@ it('should pass syntax errors', function (cb) {
 	stream.write(getFixtureFile('errored.js'));
 });
 
-it('should expose the Traceur runtime path', function () {
+it('should expose the Traceur runtime path', () => {
 	assert(typeof traceur.RUNTIME_PATH === 'string');
 	assert(traceur.RUNTIME_PATH.length > 0);
 });
 
-it('should keep folder in module names with cjs modules', function (cb) {
-	// cjs is default module implementation
-	var stream = traceur();
+it('should keep folder in module names with cjs modules', cb => {
+	// Cjs is default module implementation
+	const stream = traceur();
 
-	stream.on('data', function (file) {
-		var content = file.contents.toString();
-		var name = path.relative(path.join(__dirname, 'fixture'), file.path);
+	stream.on('data', file => {
+		const content = file.contents.toString();
+		const name = path.relative(path.join(__dirname, 'fixture'), file.path);
 		switch (name) {
 			case 'calc.js':
 				assert(/require\("util\/constants"\)/.test(content), 'calc.js does not require constants');
@@ -91,29 +91,30 @@ it('should keep folder in module names with cjs modules', function (cb) {
 				break;
 			case path.join('util', 'constants.js'):
 			case path.join('calc', 'add.js'):
-				// just check that files have right names
+				// Just check that files have right names
 				break;
 			default:
-				cb('unexpected compiled file: ' + name);
+				cb(`unexpected compiled file: ${name}`);
 		}
 	});
 
 	stream.on('end', cb);
 
-	['calc.js', 'util/constants.js', 'calc/add.js'].forEach(function (name) {
+	for (const name of ['calc.js', 'util/constants.js', 'calc/add.js']) {
 		stream.write(getFixtureFile(name));
-	});
+	}
 
 	stream.end();
 });
 
 // TODO: update this test for latest Traceur
-it.skip('should keep folder in module names with register modules', function (cb) {
-	var stream = traceur({modules: 'register', moduleName: true});
+it.skip('should keep folder in module names with register modules', cb => {
+	const stream = traceur({modules: 'register', moduleName: true});
 
-	stream.on('data', function (file) {
-		var content = file.contents.toString();
-		var name = path.relative(path.join(__dirname, 'fixture'), file.path);
+	stream.on('data', file => {
+		const content = file.contents.toString();
+		const name = path.relative(path.join(__dirname, 'fixture'), file.path);
+		let fileName;
 		switch (name) {
 			case 'calc.js':
 				assert(/System\.get\("util\/constants"\)/.test(content), 'calc.js does not require constants');
@@ -121,19 +122,19 @@ it.skip('should keep folder in module names with register modules', function (cb
 				break;
 			case path.join('util', 'constants.js'):
 			case path.join('calc', 'add.js'):
-				var fileName = file.relative.replace(new RegExp('\\' + path.sep, 'g'), '/').replace('.js', '');
-				assert(new RegExp('System\\.registerModule\\("' + fileName + '.js"').test(content), fileName + ' does not contains its filename');
+				fileName = file.relative.replace(new RegExp(`\\${path.sep}`, 'g'), '/').replace('.js', '');
+				assert(new RegExp(`System\\.registerModule\\("${fileName}.js"`).test(content), `${fileName} does not contains its filename`);
 				break;
 			default:
-				cb('unexpected compiled file: ' + file.relative);
+				cb(`unexpected compiled file: ${file.relative}`);
 		}
 	});
 
 	stream.on('end', cb);
 
-	['calc.js', 'util/constants.js', 'calc/add.js'].forEach(function (name) {
+	for (const name of ['calc.js', 'util/constants.js', 'calc/add.js']) {
 		stream.write(getFixtureFile(name));
-	});
+	}
 
 	stream.end();
 });

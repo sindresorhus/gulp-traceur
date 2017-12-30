@@ -1,11 +1,10 @@
 'use strict';
-var gutil = require('gulp-util');
-var through = require('through2');
-var applySourceMap = require('vinyl-sourcemaps-apply');
-var objectAssign = require('object-assign');
-var traceur = require('traceur');
+const through = require('through2');
+const applySourceMap = require('vinyl-sourcemaps-apply');
+const traceur = require('traceur');
+const PluginError = require('plugin-error');
 
-module.exports = function (opts) {
+module.exports = options => {
 	return through.obj(function (file, enc, cb) {
 		if (file.isNull()) {
 			cb(null, file);
@@ -13,22 +12,22 @@ module.exports = function (opts) {
 		}
 
 		if (file.isStream()) {
-			cb(new gutil.PluginError('gulp-traceur', 'Streaming not supported'));
+			cb(new PluginError('gulp-traceur', 'Streaming not supported'));
 			return;
 		}
 
-		opts = objectAssign({
+		options = Object.assign({
 			modules: 'commonjs',
 			inputSourceMap: file.sourceMap
-		}, opts);
+		}, options);
 
 		try {
-			var compiler = new traceur.NodeCompiler(opts);
-			var ret = compiler.compile(file.contents.toString(), file.relative, file.relative, file.base);
-			var sourceMap = file.sourceMap && compiler.getSourceMap();
+			const compiler = new traceur.NodeCompiler(options);
+			const ret = compiler.compile(file.contents.toString(), file.relative, file.relative, file.base);
+			const sourceMap = file.sourceMap && compiler.getSourceMap();
 
 			if (ret) {
-				file.contents = new Buffer(ret);
+				file.contents = Buffer.from(ret);
 			}
 
 			if (sourceMap) {
@@ -37,8 +36,8 @@ module.exports = function (opts) {
 
 			this.push(file);
 		} catch (err) {
-			var msg = Array.isArray(err) ? err.join('\n') : err;
-			this.emit('error', new gutil.PluginError('gulp-traceur', msg, {
+			const msg = Array.isArray(err) ? err.join('\n') : err;
+			this.emit('error', new PluginError('gulp-traceur', msg, {
 				fileName: file.path,
 				showStack: false
 			}));

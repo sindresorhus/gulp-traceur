@@ -1,46 +1,46 @@
 {
-  "name": "gulp-traceur",
-  "version": "0.17.2",
-  "description": "Traceur is a JavaScript.next to JavaScript-of-today compiler",
-  "license": "MIT",
-  "repository": "sindresorhus/gulp-traceur",
-  "author": {
-    "name": "Sindre Sorhus",
-    "email": "sindresorhus@gmail.com",
-    "url": "sindresorhus.com"
-  },
-  "engines": {
-    "node": ">=0.10.0"
-  },
-  "scripts": {
-    "test": "xo && mocha"
-  },
-  "files": [
-    "index.js"
-  ],
-  "keywords": [
-    "gulpplugin",
-    "traceur",
-    "rewriting",
-    "transformation",
-    "syntax",
-    "codegen",
-    "desugaring",
-    "language",
-    "es2015",
-    "compiler",
-    "transpiler"
-  ],
-  "dependencies": {
-    "gulp-util": "^3.0.0",
-    "object-assign": "^4.0.1",
-    "through2": "^2.0.0",
-    "traceur": "~0.0.95",
-    "vinyl-sourcemaps-apply": "^0.2.1"
-  },
-  "devDependencies": {
-    "gulp-sourcemaps": "^1.2.8",
-    "mocha": "*",
-    "xo": "*"
-  }
+	"name": "gulp-traceur",
+	"version": "0.17.2",
+	"description": "Traceur is a JavaScript.next to JavaScript-of-today compiler",
+	"license": "MIT",
+	"repository": "sindresorhus/gulp-traceur",
+	"author": {
+		"name": "Sindre Sorhus",
+		"email": "sindresorhus@gmail.com",
+		"url": "sindresorhus.com"
+	},
+	"engines": {
+		"node": ">=4"
+	},
+	"scripts": {
+		"test": "xo && mocha"
+	},
+	"files": [
+		"index.js"
+	],
+	"keywords": [
+		"gulpplugin",
+		"traceur",
+		"rewriting",
+		"transformation",
+		"syntax",
+		"codegen",
+		"desugaring",
+		"language",
+		"es2015",
+		"compiler",
+		"transpiler"
+	],
+	"dependencies": {
+		"plugin-error": "^0.1.2",
+		"through2": "^2.0.0",
+		"traceur": "~0.0.111",
+		"vinyl-sourcemaps-apply": "^0.2.1"
+	},
+	"devDependencies": {
+		"gulp-sourcemaps": "^2.6.2",
+		"mocha": "*",
+		"vinyl": "^2.1.0",
+		"xo": "*"
+	}
 }

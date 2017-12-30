@@ -18,11 +18,11 @@ $ npm install --save-dev gulp-traceur
 const gulp = require('gulp');
 const traceur = require('gulp-traceur');
 
-gulp.task('default', () => {
-	return gulp.src('src/app.js')
+gulp.task('default', () =>
+	gulp.src('src/app.js')
 		.pipe(traceur())
-		.pipe(gulp.dest('dist'));
-});
+		.pipe(gulp.dest('dist'))
+);
 ```
 
 
@@ -36,11 +36,11 @@ See the `Traceur` [options](https://github.com/google/traceur-compiler/issues/58
 
 ##### modules
 
-Type: `string`  
-Default: `commonjs`  
-Values: see [traceur `modules` option](https://github.com/google/traceur-compiler/wiki/Options-for-Compiling#options-for-modules)
+Type: `string`<br>
+Default: `commonjs`<br>
+Values: See [traceur `modules` option](https://github.com/google/traceur-compiler/wiki/Options-for-Compiling#options-for-modules)
 
-By default, gulp-traceur treats all files as modules. This allows use of the `export`, `module` and `import` syntax. In this way the transformer can be used to compile ES2015 for AMD or Node.js environments.
+By default, `gulp-traceur` treats all files as modules. This allows use of the `export`, `module` and `import` syntax. In this way the transformer can be used to compile ES2015 for AMD or Node.js environments.
 
 ### traceur.RUNTIME_PATH
 
@@ -57,17 +57,17 @@ const sourcemaps = require('gulp-sourcemaps');
 const traceur = require('gulp-traceur');
 const concat = require('gulp-concat');
 
-gulp.task('default', () => {
-	return gulp.src('src/*.js')
+gulp.task('default', () =>
+	gulp.src('src/*.js')
 		.pipe(sourcemaps.init())
 		.pipe(traceur())
 		.pipe(concat('all.js'))
 		.pipe(sourcemaps.write('.'))
-		.pipe(gulp.dest('dist'));
-});
+		.pipe(gulp.dest('dist'))
+);
 ```
 
 
 ## License
 
-MIT © [Sindre Sorhus](http://sindresorhus.com)
+MIT © [Sindre Sorhus](https://sindresorhus.com)
