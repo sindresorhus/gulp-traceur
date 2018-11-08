@@ -1,3 +1,9 @@
+# Deprecated
+
+Deprecated as Traceur is unmaintained. Check out [`gulp-babel`](https://github.com/babel/gulp-babel) instead.
+
+---
+
 # gulp-traceur [![Build Status](https://travis-ci.org/sindresorhus/gulp-traceur.svg?branch=master)](https://travis-ci.org/sindresorhus/gulp-traceur)
 
 > [`Traceur`](https://github.com/google/traceur-compiler) is a JavaScript.next to JavaScript-of-today compiler
